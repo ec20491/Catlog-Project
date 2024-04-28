@@ -1,0 +1,126 @@
+{% block head %}
+<style>
+    body{
+        background: #fdfaf2;
+        font-family:Arial;
+    }
+
+    .login-form-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
+  }
+  .login-form-container{
+    color:#fe7600;
+  }
+  .login-form-container input {
+    border: 3px solid #fe7600;
+    font-size: large;
+    color: #ec6e00;
+    background-color:transparent;
+    width: 300px;
+    padding: 15px 15px;
+    border-radius: 15px;
+  }
+  .login-form-container input::placeholder{
+    color: #fe7600;
+    }
+  .login-form-container input:hover{
+  background-color: rgb(249, 228, 183);
+  }
+  .login-form-container button{
+    border: 3px solid #813a56;
+    border-radius: 20px;
+    padding: 18px 40px;
+    cursor: pointer; /* Changes cursor to pointer when hovering over the button */
+    background-color: #7db6d4; /* Bootstrap primary button color */
+    font-size: large;
+    color: #813a56;
+    box-shadow: -5px 5px 0px 0px #813a56; /* Add shadow: Horizontal offset, vertical offset, blur radius, spread radius, color */
+  
+  }
+
+  .login-form-container button:hover{
+    border: 3px solid #813a56;
+    box-shadow: -4px 4px 0px 0px #813a56; /* Intensify shadow on hover */
+  
+  }
+    .public-nav {
+        display: flex;
+        justify-content: space-around;
+        height: 100px;
+        background: #fdfaf2;
+        border: 1px solid #ccc; /* Add a border around the entire nav container */
+    }
+    .login-form-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95vh; 
+  }
+
+  .error-message{
+    color: #813a56;
+  }
+  
+  .form-inner{
+    background-color: rgb(255, 221, 149);
+    outline: none;
+    border: 2px solid #fe7600;
+    padding: 40px;
+    border-radius: 10px; 
+    display: flex;
+    flex-direction: column;
+    width: 600px; 
+  }
+
+.public-nav-item {
+        font-weight: lighter;
+        font-size: larger;
+        position: relative;
+        flex: 1; /* This makes each nav-item take equal width */
+        display: flex; /* Makes content of nav-item use flexbox layout */
+        justify-content: center; /* Center the content horizontally */
+        align-items: center; /* Center the content vertically */
+        border-right: 1px solid #ccc; /* Adds a border to the right of each nav-item */
+        padding: 20px 0; /* Add some vertical padding */
+        transition: background-color 0.3s ease;
+        }
+    .public-nav-item h3 {
+        color:#3b3b3b;
+        font-weight:light; 
+        font-size:30px;
+    }
+    form button {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+<body>
+    <div class='public-nav' >
+        <div class='public-nav-item'>
+            <h3 >ᆞᆞCᆞᆞAᆞᆞTᆞᆞLᆞᆞOᆞᆞGᆞᆞ</h3>
+        </div>
+    </div>
+    <div class='login-form-container'>
+        <div class='form-inner'>
+            <form method="POST">
+                {% csrf_token %}
+                <h2>Enter new password</h2>
+                <p style="text-align: center;">Please enter your new password twice so we can verify you typed it in correctly.</p>
+                {{form}}
+                <button type="submit">Change my password</button>
+           
+            </form>
+
+        </div>
+    </div>
+</body>
+
+
+
