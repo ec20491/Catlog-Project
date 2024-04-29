@@ -1,3 +1,4 @@
+from typing import OrderedDict
 from rest_framework import serializers
 from Social.models import Report, User, Post, Contact,Comment,Like,Verify,Item, SaveItem
 from Social.models import Offer
@@ -6,7 +7,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone 
 from django.conf import settings
-import pandas as pd
+import pandas as pd 
+from django.db.models import Q
+
 
 
 
@@ -260,13 +263,6 @@ class VeterinaryProfessionalSerializer(serializers.ModelSerializer):
         model = VeterinaryProfessional
         fields = ['verified','reference_number','rcvs_email', 'registration_date','location','field_of_work']
 
-    def __init__(self, *args, **kwargs):
-        super(VeterinaryProfessionalSerializer, self).__init__(*args, **kwargs)
-        
-        # when instance is provided (i.e., during updates), make some fields not required
-        if self.instance:
-            self.fields['reference_number'].required = False
-            self.fields['rcvs_email'].required = False
 
     def validate_rcvs_email(self, value):
         if value and not value.endswith('@rcvs.org.uk'):
@@ -290,15 +286,6 @@ class VeterinaryProfessionalSerializer(serializers.ModelSerializer):
         return value
     
     def validate(self, data):
-        user = self.context['request'].user
-        reference_number = data.get('reference_number')
-        rcvs_email = data.get('rcvs_email')
-        
-        if VeterinaryProfessional.objects.filter(reference_number=reference_number).exclude(user=user).exists():
-            raise serializers.ValidationError({"reference_number": "This reference number is already in use."})
-        
-        if VeterinaryProfessional.objects.filter(rcvs_email=rcvs_email).exclude(user=user).exists():
-            raise serializers.ValidationError({"rcvs_email": "This RCVS email is already in use."})
         return data
     
     def create(self, validated_data):
@@ -315,7 +302,7 @@ class SaveItemSerializer(serializers.ModelSerializer):
         fields = ['user', 'item', 'saved_at']
 
     def get_item(self, obj):
-        serializer = ItemSerializer(obj.item)  # Note that it's not calling .all()
+        serializer = ItemSerializer(obj.item) 
         return serializer.data
 
 
@@ -365,21 +352,29 @@ class UserSerializer(serializers.ModelSerializer):
             instance.profile_image.save(profile_image.name, profile_image)
         
         # Update or create VeterinaryProfessional information if provided
-        vet_prof_data = validated_data.pop('vet_professional_info', None)
-        print(vet_prof_data)
-        if vet_prof_data:
-            print('yes data exists')
-            VeterinaryProfessional.objects.update_or_create(
-                
-                user=instance, 
-                defaults=vet_prof_data
-            )
-            instance.vet_professional = True
-        # else:
-        #     # Check if a VeterinaryProfessional instance exists and delete if not updating
-        #     VeterinaryProfessional.objects.filter(user=instance).delete()
-        #     instance.vet_professional = False
-    
+        
+        
+        vet_prof_data = validated_data.pop('veterinaryprofessional', None)
+        vet_professional = validated_data.pop('vet_professional', None)
+        print('calidated data', validated_data)
+        print('vet_data', vet_prof_data)
+        print("test:" , vet_professional)
+
+        if vet_professional is False:
+            instance.vet_professional = False
+            VeterinaryProfessional.objects.filter(user=instance).delete()
+
+        elif vet_professional is True:
+           
+            if vet_prof_data:  
+                print('Yes, data exists')
+                VeterinaryProfessional.objects.update_or_create(
+                    user=instance, 
+                    defaults=vet_prof_data
+                )
+                instance.vet_professional = True
+            else:
+                print("No vet data found")
         instance.save()
         return instance
 

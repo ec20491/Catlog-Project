@@ -185,8 +185,6 @@ class UserEditView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-    
-        print("here 1", request.data)
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         try:
@@ -194,19 +192,22 @@ class UserEditView(RetrieveUpdateAPIView):
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
-            print("here 2", serializer.validated_data)
         except Exception as e:
             print("Error during serialization or update:", e)
             # Optionally, return an error response here
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # vet_info= serializer.validated_data.get('veterinaryprofessional', {})
-    
-        vet_professional = getattr(request.user, 'veterinaryprofessional', None)
-        if vet_professional and request.session.get('reference_number_validated', False):
-                vet_professional.generate_verification_code()
+        # verification_code = instance.verification_code
+        vet_info= serializer.validated_data.get('veterinaryprofessional', {})
+        print('vet info availble:', serializer.validated_data)
+        vet_professional_info = getattr(request.user, 'veterinaryprofessional', None)
+        print("1",request.user)
+        print("2",request.session.get('reference_number_validated', False))
+        print("3",request.session.get('rcvs_email_validated', False))
+        if vet_professional_info and request.session.get('reference_number_validated', False):
+                vet_professional_info.generate_verification_code()
                 subject = 'Catlog Verification Code'
-                message = f'Your verification code is {vet_professional.verification_code} , and it expires in 1 hour.'
+                message = f'Your verification code is {vet_professional_info.verification_code} , and it expires in 1 hour.'
                 from_email = 'your-email@example.com'
                 recipient_list = [request.user.email]
 

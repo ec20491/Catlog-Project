@@ -18,8 +18,8 @@ class UserProfile(AbstractUser):
 
 class VeterinaryProfessional(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-    reference_number = models.CharField(max_length=100, unique=True)
-    rcvs_email = models.EmailField(unique=True)
+    reference_number = models.CharField(max_length=100)
+    rcvs_email = models.EmailField()
     registration_date = models.DateField(null=True, blank=True)
     location = models.TextField(blank=True, null=True)
     field_of_work = models.TextField(blank=True, null=True)
