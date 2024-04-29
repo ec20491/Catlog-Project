@@ -194,16 +194,12 @@ class UserEditView(RetrieveUpdateAPIView):
             self.perform_update(serializer)
         except Exception as e:
             print("Error during serialization or update:", e)
-            # Optionally, return an error response here
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # verification_code = instance.verification_code
         vet_info= serializer.validated_data.get('veterinaryprofessional', {})
         print('vet info availble:', serializer.validated_data)
         vet_professional_info = getattr(request.user, 'veterinaryprofessional', None)
-        print("1",request.user)
-        print("2",request.session.get('reference_number_validated', False))
-        print("3",request.session.get('rcvs_email_validated', False))
+        
         if vet_professional_info and request.session.get('reference_number_validated', False):
                 vet_professional_info.generate_verification_code()
                 subject = 'Catlog Verification Code'

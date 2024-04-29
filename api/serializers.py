@@ -403,7 +403,6 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_num_followers(self, obj):
-        # Assuming you have a reverse relation set up from User to Follow for followers
         return obj.rel_to_set.count()
     
     def get_followers(self, obj):
@@ -412,7 +411,6 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.data
     
     def get_num_following(self, obj):
-        # Assuming you have a reverse relation set up from User to Follow for followings
         return obj.rel_from_set.count()
     
     def get_followings(self, obj):
@@ -436,7 +434,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             try:
                 validate_password(value)
             except DjangoValidationError as e:
-                # This converts Django's ValidationError into DRF's ValidationError
                 raise serializers.ValidationError(list(e.messages))
             return value
         
